@@ -3,37 +3,67 @@ require 'bundler/setup'
 
 require 'fssm'
 
-raise "You must supply only one argument" if ARGV.length != 1
-
-class Service
+class Webdriver
   SERVICE_NAME = "Webdriver Updater"
-  def install
-    system("sc create \"#{SERVICE_NAME}\" binPath=\"java -jar webdriver.jar\"")
+  WEB_DRIVER_PATH = "build/java/server/src/org/openqa/selenium/server/"
+  EXECUTABLE_NAME = "server-standalone.jar"
+  LATEST_WEBDRIVER = "e:/#{WEB_DRIVER_PATH}#{EXECUTABLE_NAME}"
+  
+  def update
+	puts "Updating webdriver binaries"
+	FileUtils.mkdir webdriver_folder if not File.exists? webdriver_folder
+	FileUtils.cp_r LATEST_WEBDRIVER, webdriver_folder + EXECUTABLE_NAME
   end
-
+  
   def start
-    system("sc start \"#{SERVICE_NAME}\"")
+    monitor
+	run
+	puts "Running... press any key to exit"
+	STDIN.gets
+	stop
   end
-
+  
   def stop
-    system("sc stop \"#{SERVICE_NAME}\"")
+	puts "Stopping..."
+	Process.kill 9, @status.pid
+	puts "Stopped"
+  end
+  
+  def run
+	puts "Starting webdriver on a new thread"
+	Thread.new do
+		@status = IO.popen("\"#{java_binary}\" -jar \"#{make_path_windows_friendly(webdriver_folder+EXECUTABLE_NAME)}\"") 
+	end
+	puts "Webdriver running with pid: #{@status.pid}"
   end
 
   def monitor
-    FSSM.monitor('c:/projects/mon/', 'test.txt') do
-      update {|base, relative|
-        stop
-        get_updated_webdriver
-        start
-      }
-    end
+	thread = Thread.new do
+	  folder_parts = LATEST_WEBDRIVER.split('/')
+	  folder_parts.pop
+	  webdriver = self
+		FSSM.monitor(folder_parts.join('\\'), EXECUTABLE_NAME) do
+		  create {|base, relative|
+			webdriver.stop
+			webdriver.update
+			webdriver.run
+		  }
+		end
+	end
   end
 
-  private
-  def get_updated_webdriver
-    raise "not implemented!"
+  def java_binary
+	make_path_windows_friendly "C:/Program Files (x86)/Java/jre6/bin/java.exe"
+  end
+  def webdriver_folder
+	File.expand_path(File.dirname(__FILE__)) + "/bin/"
+	#"c:/bin/"
+  end
+  
+  def make_path_windows_friendly(path)
+	path.gsub('/', '\\')
   end
 end
 
-service = Service.new
-service.send(ARGV.first.to_sym)
+webdriver = Webdriver.new
+webdriver.start
