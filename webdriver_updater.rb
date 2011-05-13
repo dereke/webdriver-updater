@@ -7,6 +7,8 @@ module WebdriverUpdater
   EXECUTABLE_NAME = "server-standalone.jar"
 
   ENV['WEBDRIVER_LATEST'] = ENV['WEBDRIVER_LATEST'] || "e:/#{WEB_DRIVER_PATH}#{EXECUTABLE_NAME}"
+  ENV['JAVA_BINARY'] =  ENV['JAVA_BINARY'] || "C:/Program Files (x86)/Java/jre6/bin/java.exe"
+
 
   class Webdriver
     SERVICE_NAME = "Webdriver Updater"
@@ -55,12 +57,11 @@ module WebdriverUpdater
     end
 
     def java_binary
-      make_path_windows_friendly "C:/Program Files (x86)/Java/jre6/bin/java.exe"
+      make_path_windows_friendly ENV['JAVA_BINARY']
     end
 
     def webdriver_folder
       File.expand_path(File.dirname(__FILE__)) + "/bin/"
-      #"c:/bin/"
     end
 
     def make_path_windows_friendly(path)
