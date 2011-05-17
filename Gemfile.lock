@@ -1,13 +1,23 @@
 GEM
   remote: http://rubygems.org/
   specs:
-    fssm (0.2.7)
-    systemu (2.2.0)
+    childprocess (0.1.9)
+      ffi (~> 1.0.6)
+    directory_watcher (1.4.0)
+    ffi (1.0.8)
+    ffi (1.0.8-x86-mingw32)
+    json_pure (1.5.1)
+    rubyzip (0.9.4)
+    selenium-webdriver (0.2.0)
+      childprocess (>= 0.1.7)
+      ffi (>= 1.0.7)
+      json_pure
+      rubyzip
 
 PLATFORMS
-  java
+  ruby
   x86-mingw32
 
 DEPENDENCIES
-  fssm
-  systemu
+  directory_watcher
+  selenium-webdriver
