@@ -8,6 +8,7 @@ module AutoDriver
 
     def initialize(options)
       @latest_binary = options.delete('latest-binary')
+      @arguments = options.delete('arguments')
       @executable_name = @latest_binary.split('/').last
     end
 
@@ -20,6 +21,7 @@ module AutoDriver
       @execute_in_folder = Dir.mktmpdir
       update
       @server = Selenium::Server.new(File.join(@execute_in_folder, @executable_name), :background => true)
+      @server << @arguments
       @monitor_thread = Thread.new do
         folder_parts = @latest_binary.split('/')
         folder_parts.pop
