@@ -1,4 +1,4 @@
 source :rubygems
 
-gem 'fssm'
-gem 'systemu'
+gem 'directory_watcher'
+gem 'selenium-webdriver'

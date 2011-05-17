@@ -1,0 +1,3 @@
+:autodrive:
+  latest-binary: ../webdriver/build/dist/selenium-server-standalone-2.0rc1.jar
+  arguments: -role wd
